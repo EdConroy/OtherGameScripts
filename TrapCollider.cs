@@ -3,26 +3,35 @@ using System.Collections;
 
 public class TrapCollider : MonoBehaviour {
 	public Transform character, SpawnPoint, NextDoor;
-	// Use this for initialization
+	public int TrapType;
+	enum Traps {LT_PIT, LT_DOOR};
+	public void Activate()
+	{
+		Debug.Log("Active");
+	}
 	void Start () 
 	{
 	
 	}
-	// Update is called once per frame
 	void Update () 
 	{
 
 	}
 	void OnTriggerEnter(Collider other) 
 	{
-		Debug.Log("Colliding");
-		if (other.CompareTag("pit"))
+		if(other.gameObject.GetComponent("Client") != null) //You can change this script to any script that only the player has
 		{
-			character.position = SpawnPoint.position;
-		}
-		if(other.CompareTag("door"))
-		{
-			character.position = NextDoor.position;
+			Debug.Log("Colliding");
+			if (TrapType == (int) Traps.LT_PIT)
+			{
+				Pit p = new Pit();
+				p.Activate(character,SpawnPoint);
+			}
+			else if(TrapType == (int) Traps.LT_DOOR)
+			{
+				Door d = new Door();
+				d.Activate(character,NextDoor);
+			}
 		}
 	}
 }
