@@ -1,9 +1,15 @@
 using UnityEngine;
 using System.Collections;
 
-public class PowerUp : MonoBehaviour {
-	GameObject[] rocks; // array of destructable traps
-	public Transform spawnpoint, character; //teleportation point and reference to the character 
+public class PowerUp : MonoBehaviour
+{
+	public Transform spawnpoint, character;
+	public int PowerUpType;
+	enum PowerUps {LT_TRANS, LT_EXPL};
+	public void Activate()
+	{
+		Debug.Log("Active");
+	}
 	void Start () 
 	{
 	
@@ -14,22 +20,19 @@ public class PowerUp : MonoBehaviour {
 	}
 	void OnTriggerEnter(Collider other)
 	{
-		Debug.Log("Colliding");
-		if (other.CompareTag("trans"))
+		if(other.gameObject.GetComponent("Client") != null) //You can change this script to any script that only the player has
 		{
-			character.position = spawnpoint.position; //spawns the character at a location
-		}
-		else if(other.CompareTag("rock"))
-		{
-			DestroyRocks();
+			Debug.Log("Colliding");
+			if (PowerUpType == (int) PowerUps.LT_TRANS)
+			{
+				Transporter trans = new Transporter();
+				trans.Activate(character, spawnpoint);
+			}
+			else if(PowerUpType == (int) PowerUps.LT_EXPL)
+			{
+				Dynamite exp = new Dynamite();
+				exp.Activate();
+			}
 		}
 	}
-	void DestroyRocks()
-	{
-		rocks = GameObject.FindGameObjectsWithTag("rock");
-		for(int i = 0; i < rocks.Length; i++) //You can change this to any value to simulate distance
-			if(rocks[i])
-				Destroy(rocks[i]);
-	}
-
 }
