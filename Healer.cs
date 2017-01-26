@@ -29,4 +29,14 @@ public class Healer : Enemy
             //TODO: Heal the dude here
         }
     }
+    public void Pursuit(Vector3 playerPos, UnityEngine.AI.NavMeshAgent agent,
+    float x_offset, float y_offset, float z_offset)
+    {
+        playerPos = new Vector3(
+    player.transform.position.x + x_offset,
+    player.transform.position.y + y_offset,
+    player.transform.position.z + z_offset);
+
+        agent.destination = playerPos;
+    }
 }

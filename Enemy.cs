@@ -121,6 +121,12 @@ public class Enemy : MonoBehaviour {
 
                 //TODO: Do whatever it is that drones do
             }
+            if(spotted >= 8 && enemy_id == (int) enemyClass.T_HEALER)
+            {
+                alerted = true;
+                Healer h = new Healer();
+                h.Pursuit(playerPos, agent, x_offset, y_offset, z_offset);
+            }
         }
     }
 }
