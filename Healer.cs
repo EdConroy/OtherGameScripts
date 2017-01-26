@@ -32,6 +32,8 @@ public class Healer : Enemy
     public void Pursuit(Vector3 playerPos, UnityEngine.AI.NavMeshAgent agent,
     float x_offset, float y_offset, float z_offset)
     {
+        if (alerted && healing)
+            healing = false;
         playerPos = new Vector3(
     player.transform.position.x + x_offset,
     player.transform.position.y + y_offset,
