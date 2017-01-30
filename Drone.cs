@@ -4,19 +4,19 @@ using UnityEngine;
 
 public class Drone : Enemy
 {
-    public UnityEngine.AI.NavMeshAgent agent;
-
     public void Pursuit(Collider c)
     {
-        goal = c.gameObject.transform;
-        agent.destination = goal.position;
+        //FIX ME: Current iteration works but causeses a significant drop
+        //in frame rate.
 
-        if (agent.remainingDistance < 0.5f)
-        {
+        Vector3 rotationPoint = new Vector3(
+            goal.position.x + 2f, 
+            goal.position.y + 2f, 
+            goal.transform.position.z + 2f);
+
             Quaternion rotationOrigin = goal.rotation;
 
-            transform.RotateAround(goal.position, Vector3.up, speed * Time.deltaTime);
+            transform.RotateAround(rotationPoint, Vector3.up, speed * Time.deltaTime);
             transform.rotation = Quaternion.Slerp(transform.rotation, rotationOrigin, 1f);
-        }
     }
 }
