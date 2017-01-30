@@ -16,6 +16,7 @@ public class Enemy : MonoBehaviour {
     private bool called = false;
     public bool healing = false;
     private bool acting = false;
+    public bool rotating = false;
     public int spotted = 0;
 
     public GameObject player;
@@ -26,13 +27,16 @@ public class Enemy : MonoBehaviour {
     public float x_offset, y_offset, z_offset;
 
     public Enemy[] enemyList;
-    public Enemy[] cinematicList;
+    public static int c_enemy_count = 0;
 
     public int health = 100;
     public GameObject self;
 
     void Start()
     {
+        if (enemy_id == (int)enemyClass.T_CENEMY)
+            ++c_enemy_count;
+        //c_id = cinematicList.IndexOf(this);
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         agent.autoBraking = false;
         if (!alerted)
@@ -46,23 +50,10 @@ public class Enemy : MonoBehaviour {
             return;
         agent.destination = routes[destRoute].position;
         destRoute = (destRoute + 1) % routes.Length;
-
-        if(acting)
-        {
-            int c_enemy_count = 0;
-            for(int i = 0; i < cinematicList.Length; i++)
-            {
-                if (cinematicList[i].enemy_id == (int)enemyClass.T_CENEMY)
-                    c_enemy_count++;
-            }
-            if (c_enemy_count <= 0)
-                acting = false;
-        }
     }
 
     void Pursuit()
     {
-        //TODO: implement a genric chase function for the enemy character
         alerted = true;
         goal = player.transform;
         agent.destination = goal.position;
@@ -84,6 +75,7 @@ public class Enemy : MonoBehaviour {
             if (alerted)
             {
                 alerted = false;
+                rotating = false;
                 goal = null;
                 GoToNextPoint();
             }
@@ -94,6 +86,47 @@ public class Enemy : MonoBehaviour {
             healing = true;
             Healer h = new Healer();
             h.FindPatients(enemyList, agent);
+        }
+
+        if (enemy_id == (int)enemyClass.T_CALLY && acting)
+        {
+            if (c_enemy_count < 1)
+            {
+                goal = null;
+                agent.autoBraking = false;
+                acting = false;
+
+                Debug.Log("Called");
+                GoToNextPoint();
+            }
+        }
+
+        if (agent.autoBraking && (!rotating || !acting))
+        {
+            agent.autoBraking = false;
+        }
+    }
+
+    void LateUpdate()
+    {
+        Ray ray = new Ray(transform.position, Vector3.forward);
+
+        Debug.DrawRay(transform.position, Vector3.forward, Color.green);
+
+        if (Physics.Raycast(ray, 100f))
+        {
+            if(enemy_id == (int) enemyClass.T_DRONE)
+            {
+                rotating = true;
+                alerted = true;
+                Drone d = new Drone();
+                d.agent = agent;
+                goal = player.transform;
+                d.Pursuit();
+                agent.autoBraking = true;
+
+                //TODO: Whatever it is that drones do
+            }
         }
     }
 
@@ -127,16 +160,6 @@ public class Enemy : MonoBehaviour {
                 
                 //TODO: Shoot at the player
             }
-            if(spotted >= 8 && enemy_id == (int) enemyClass.T_DRONE)
-            {
-                alerted = true;
-                Drone d = new Drone();
-                d.agent = agent;
-                goal = c.gameObject.transform;
-                d.Pursuit(c);
-                
-                //TODO: Do whatever it is that drones do
-            }
             if(spotted >= 8 && enemy_id == (int) enemyClass.T_HEALER)
             {
                 alerted = true;
@@ -149,20 +172,28 @@ public class Enemy : MonoBehaviour {
             enemy_id == (int) enemyClass.T_CENEMY))
         {
             acting = true;
-            if(c.gameObject.CompareTag("Cinematic"))
+
+            if (c.gameObject.CompareTag("Cinematic"))
             {
                 if (goal)
+                {
                     agent.destination = goal.position;
+                    agent.autoBraking = true;
+                }
                 else if (!goal)
                     return;
 
-                float rand = Random.Range(1f, 100f);
-
-                if(enemy_id == (int) enemyClass.T_CENEMY && rand % 7f == 0)
+                if (enemy_id == (int)enemyClass.T_CENEMY)
                 {
-                    DestroyImmediate(this.gameObject);
+                    health--;
+                    if (health < 0)
+                    {
+                        c_enemy_count--;
+                        Destroy(this.gameObject);
+                    }
                 }
             }
+
         }
     }
 }

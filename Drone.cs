@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class Drone : Enemy
 {
-    public void Pursuit(Collider c)
+    public void Pursuit()
     {
         //FIX ME: Current iteration works but causeses a significant drop
         //in frame rate.
 
         Vector3 rotationPoint = new Vector3(
-            goal.position.x + 2f, 
-            goal.position.y + 2f, 
-            goal.transform.position.z + 2f);
+            goal.position.x + 9f, 
+            goal.position.y + 9f, 
+            goal.transform.position.z + 9f);
 
             Quaternion rotationOrigin = goal.rotation;
 
