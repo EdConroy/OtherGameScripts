@@ -41,4 +41,16 @@ public class Healer : Enemy
 
         agent.destination = playerPos;
     }
+    public void Heal()
+    {
+        //Heal the unit
+    }
+    public void HealerAttack()
+    {
+        //Attack the player
+    }
+    public void HealerAnimate()
+    {
+        //Preform animations based on the current state the Enemy is in
+    }
 }

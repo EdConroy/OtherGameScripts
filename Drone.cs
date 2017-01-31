@@ -19,4 +19,12 @@ public class Drone : Enemy
             transform.RotateAround(rotationPoint, Vector3.up, speed * Time.deltaTime);
             transform.rotation = Quaternion.Slerp(transform.rotation, rotationOrigin, 1f);
     }
+    public void DroneAttack()
+    {
+        //Attack the player
+    }
+    public void DroneAnimate()
+    {
+        //Preform animations based on the current state the Enemy is in
+    }
 }

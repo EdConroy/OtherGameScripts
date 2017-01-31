@@ -14,4 +14,12 @@ public class HMech : Enemy
 
         agent.destination = playerPos;
     }
+    public void HMechAttack()
+    {
+        //Attack the player
+    }
+    public void HMechAnimate()
+    {
+        //Preform animations based on the current state the Enemy is in
+    }
 }

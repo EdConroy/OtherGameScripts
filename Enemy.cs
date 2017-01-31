@@ -36,7 +36,6 @@ public class Enemy : MonoBehaviour {
     {
         if (enemy_id == (int)enemyClass.T_CENEMY)
             ++c_enemy_count;
-        //c_id = cinematicList.IndexOf(this);
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         agent.autoBraking = false;
         if (!alerted)
@@ -57,6 +56,7 @@ public class Enemy : MonoBehaviour {
         alerted = true;
         goal = player.transform;
         agent.destination = goal.position;
+        //Change Animation State to alerted
     }
 
 	void Update ()
@@ -143,6 +143,7 @@ public class Enemy : MonoBehaviour {
                 Pursuit();
 
                 //TODO: Explode the player
+                EnemySelfDestruct();
             }
             if(spotted >= 8 && enemy_id == (int) enemyClass.T_DPS)
             {
@@ -179,6 +180,7 @@ public class Enemy : MonoBehaviour {
                 {
                     agent.destination = goal.position;
                     agent.autoBraking = true;
+                    //When it is a certain distance from the destination start shooting animation
                 }
                 else if (!goal)
                     return;
@@ -189,11 +191,18 @@ public class Enemy : MonoBehaviour {
                     if (health < 0)
                     {
                         c_enemy_count--;
+                        //Play death animation then wait for a bit then destroy this
                         Destroy(this.gameObject);
+                        
                     }
                 }
             }
 
         }
+    }
+    void EnemySelfDestruct()
+    {
+        //When in a certain range of the player destroy me and damage the player
+        //Also make explosion animation
     }
 }
