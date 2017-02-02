@@ -12,12 +12,12 @@ public class Enemy : MonoBehaviour {
     private int destRoute = 0;
     private UnityEngine.AI.NavMeshAgent agent;
 
-    public bool alerted = false;
-    private bool called = false;
-    public bool healing = false;
-    private bool acting = false;
-    public bool rotating = false;
-    public int spotted = 0;
+    protected bool alerted = false;
+    protected bool called = false;
+    protected bool healing = false;
+    protected bool acting = false;
+    protected bool rotating = false;
+    private int spotted = 0;
 
     public GameObject player;
     public GameObject p_flank;
@@ -26,7 +26,7 @@ public class Enemy : MonoBehaviour {
 
     public float x_offset, y_offset, z_offset;
 
-    public Enemy[] enemyList;
+    public static Enemy[] enemyList;
     public static int c_enemy_count = 0;
 
     public int health = 100;
