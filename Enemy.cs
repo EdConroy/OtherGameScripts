@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour {
 
-    enum enemyClass{T_HMECH, T_PROTECTOR, T_DRONE, T_KAMIKAZE, T_DPS, T_HEALER, T_CALLY, T_CENEMY};
+    public enum enemyClass{T_HMECH, T_PROTECTOR, T_DRONE, T_KAMIKAZE, T_DPS, T_HEALER, T_CALLY, T_CENEMY};
 
-    public int enemy_id;
+    public enemyClass enemy_id;
+
     public Transform[] routes;
     public Transform goal;
     private int destRoute = 0;
@@ -26,7 +27,7 @@ public class Enemy : MonoBehaviour {
 
     public float x_offset, y_offset, z_offset;
 
-    public static Enemy[] enemyList;
+    public static List<Enemy> enemyList;
     public static int c_enemy_count = 0;
 
     public int health = 100;
@@ -34,8 +35,10 @@ public class Enemy : MonoBehaviour {
 
     void Start()
     {
-        if (enemy_id == (int)enemyClass.T_CENEMY)
+        if (enemy_id == enemyClass.T_CENEMY)
             ++c_enemy_count;
+        if (enemy_id != enemyClass.T_CALLY || enemy_id != enemyClass.T_CENEMY)
+            enemyList.Add(this);
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         agent.autoBraking = false;
         if (!alerted)
@@ -81,14 +84,19 @@ public class Enemy : MonoBehaviour {
             }
         }
 
-        if(enemy_id == (int) enemyClass.T_HEALER)
+        //Make sure that we have valid patients before we check for them
+        for (int i = 0; i < enemyList.Count; i++)
+            if (enemyList[i].health <= 0)
+                enemyList.RemoveAt(i);
+
+        if (enemy_id == enemyClass.T_HEALER)
         {
             healing = true;
             Healer h = new Healer();
             h.FindPatients(enemyList, agent);
         }
 
-        if (enemy_id == (int)enemyClass.T_CALLY && acting)
+        if (enemy_id == enemyClass.T_CALLY && acting)
         {
             if (c_enemy_count < 1)
             {
@@ -102,9 +110,7 @@ public class Enemy : MonoBehaviour {
         }
 
         if (agent.autoBraking && (!rotating || !acting))
-        {
             agent.autoBraking = false;
-        }
     }
 
     void LateUpdate()
@@ -115,7 +121,7 @@ public class Enemy : MonoBehaviour {
 
         if (Physics.Raycast(ray, 100f))
         {
-            if(enemy_id == (int) enemyClass.T_DRONE)
+            if(enemy_id == enemyClass.T_DRONE)
             {
                 rotating = true;
                 alerted = true;
@@ -138,14 +144,14 @@ public class Enemy : MonoBehaviour {
                 spotted = 20;
             else if (spotted <= 20)
                 spotted++;
-            if (spotted >= 8 && enemy_id == (int) enemyClass.T_KAMIKAZE)
+            if (spotted >= 8 && enemy_id == enemyClass.T_KAMIKAZE)
             {
                 Pursuit();
 
                 //TODO: Explode the player
                 EnemySelfDestruct();
             }
-            if(spotted >= 8 && enemy_id == (int) enemyClass.T_DPS)
+            if(spotted >= 8 && enemy_id == enemyClass.T_DPS)
             {
                 alerted = true;
                 DPS d = new DPS();
@@ -153,7 +159,7 @@ public class Enemy : MonoBehaviour {
 
                 //TODO: Slice and Dice the player
             }
-            if(spotted >= 8 && enemy_id == (int) enemyClass.T_HMECH || enemy_id == (int) enemyClass.T_PROTECTOR)
+            if(spotted >= 8 && enemy_id == enemyClass.T_HMECH || enemy_id == enemyClass.T_PROTECTOR)
             {
                 alerted = true;
                 HMech h = new HMech();
@@ -161,7 +167,7 @@ public class Enemy : MonoBehaviour {
                 
                 //TODO: Shoot at the player
             }
-            if(spotted >= 8 && enemy_id == (int) enemyClass.T_HEALER)
+            if(spotted >= 8 && enemy_id == enemyClass.T_HEALER)
             {
                 alerted = true;
                 Healer h = new Healer();
@@ -169,8 +175,8 @@ public class Enemy : MonoBehaviour {
             }
         }
         if(c.gameObject.GetComponent("Enemy") != null && 
-            (enemy_id == (int) enemyClass.T_CALLY || 
-            enemy_id == (int) enemyClass.T_CENEMY))
+            (enemy_id == enemyClass.T_CALLY || 
+            enemy_id == enemyClass.T_CENEMY))
         {
             acting = true;
 
@@ -185,7 +191,7 @@ public class Enemy : MonoBehaviour {
                 else if (!goal)
                     return;
 
-                if (enemy_id == (int)enemyClass.T_CENEMY)
+                if (enemy_id == enemyClass.T_CENEMY)
                 {
                     health--;
                     if (health < 0)
